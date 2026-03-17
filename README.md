@@ -28,7 +28,7 @@ API runs at `http://localhost:8000`.
 
 ### Frontend
 
-> **Note:** The frontend was built with [vibe coding](https://cursor.com) (AI-assisted development).
+> **Note:** The frontend was built with vibe coding.
 
 ```bash
 cd smart-repo-agent-frontend
