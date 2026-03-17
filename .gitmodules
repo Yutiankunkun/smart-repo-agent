@@ -1,0 +1,6 @@
+[submodule "smart-repo-agent-backend"]
+	path = smart-repo-agent-backend
+	url = https://github.com/Yutiankunkun/smart-repo-agent-backend.git
+[submodule "smart-repo-agent-frontend"]
+	path = smart-repo-agent-frontend
+	url = https://github.com/Yutiankunkun/smart-repo-agent-frontend.git
