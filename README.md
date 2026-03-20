@@ -8,7 +8,7 @@ A full-stack system for student management and AI-assisted meeting support. Home
 smart-repo-agent/
 ├── smart-repo-agent-backend/   # FastAPI backend
 ├── smart-repo-agent-frontend/  # React frontend (Vite)
-├── nginx/                      # Nginx image + config (port 8080)
+├── nginx/                      # Nginx image + config (port 80)
 ├── docker-compose.yml          # Backend + Nginx (full stack)
 └── README.md
 ```
@@ -39,9 +39,9 @@ npm run dev
 
 Runs at `http://localhost:5173` and talks to `http://localhost:8000` by default.
 
-## Docker on AWS EC2 (port 8080)
+## Docker on AWS EC2
 
-Prerequisites on the instance: [Docker Engine](https://docs.docker.com/engine/install/) and [Docker Compose plugin](https://docs.docker.com/compose/install/linux/). Clone this repo with submodules initialized so both `smart-repo-agent-backend` and `smart-repo-agent-frontend` are present.
+Prerequisites on the instance: Docker Engine and Docker Compose plugin. Clone this repo with submodules initialized so both `smart-repo-agent-backend` and `smart-repo-agent-frontend` are present.
 
 1. Create `smart-repo-agent-backend/.env` with at least:
 
@@ -55,17 +55,17 @@ Prerequisites on the instance: [Docker Engine](https://docs.docker.com/engine/in
    docker compose up -d --build
    ```
 
-3. In the EC2 security group, allow inbound **TCP 8080** (or terminate TLS on a load balancer and forward to 8080).
+3. In the EC2 security group, allow inbound **TCP 80** (or terminate TLS on a load balancer and forward to 80).
 
-4. Open `http://<instance-public-ip>:8080` in a browser.
+4. Open `http://<instance-public-ip>:80` in a browser.
 
 Behavior:
 
-- **Nginx** listens on **8080**, serves the built React app, and proxies `/api/` to the FastAPI service.
+- **Nginx** listens on **80**, serves the built React app, and proxies `/api/` to the FastAPI service.
 - **SQLite** lives in a named volume (`backend_data`) at `/app/data/report_agent_system_lantian.db` inside the backend container.
-- Swagger UI remains available at `http://<host>:8080/docs`.
+- Swagger UI remains available at `http://<host>/docs`.
 
-To use a different public port, change the left side of the port mapping in `docker-compose.yml` (for example `"80:8080"`).
+To use a different public port, change the left side of the port mapping in `docker-compose.yml` (for example `"8080:80"` to publish container port 80 as host 8080).
 
 ## Features
 
