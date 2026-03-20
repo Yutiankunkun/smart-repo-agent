@@ -1,0 +1,27 @@
+services:
+  backend:
+    build:
+      context: ./smart-repo-agent-backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./smart-repo-agent-backend/.env
+    environment:
+      DATABASE_URL: sqlite:////app/data/report_agent_system_lantian.db
+    volumes:
+      - backend_data:/app/data
+    expose:
+      - "8000"
+    restart: unless-stopped
+
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  backend_data:

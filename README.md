@@ -7,11 +7,13 @@ A full-stack system for student management and AI-assisted meeting support. Home
 ```
 smart-repo-agent/
 ├── smart-repo-agent-backend/   # FastAPI backend
-├── smart-repo-agent-frontend/  # React frontend (built with vibe coding)
+├── smart-repo-agent-frontend/  # React frontend (Vite)
+├── nginx/                      # Nginx image + config (port 8080)
+├── docker-compose.yml          # Backend + Nginx (full stack)
 └── README.md
 ```
 
-## Quick Start
+## Quick Start (local)
 
 ### Backend
 
@@ -19,6 +21,7 @@ smart-repo-agent/
 cd smart-repo-agent-backend
 python -m venv .venv
 .venv\Scripts\activate   # Windows
+# source .venv/bin/activate  # Linux/macOS
 pip install -r requirements.txt
 # Set DASHSCOPE_API_KEY in .env
 python main.py
@@ -28,15 +31,41 @@ API runs at `http://localhost:8000`.
 
 ### Frontend
 
-> **Note:** The frontend was built with vibe coding.
-
 ```bash
 cd smart-repo-agent-frontend
 npm install
 npm run dev
 ```
 
-Runs at `http://localhost:5173`.
+Runs at `http://localhost:5173` and talks to `http://localhost:8000` by default.
+
+## Docker on AWS EC2 (port 8080)
+
+Prerequisites on the instance: [Docker Engine](https://docs.docker.com/engine/install/) and [Docker Compose plugin](https://docs.docker.com/compose/install/linux/). Clone this repo with submodules initialized so both `smart-repo-agent-backend` and `smart-repo-agent-frontend` are present.
+
+1. Create `smart-repo-agent-backend/.env` with at least:
+
+   ```env
+   DASHSCOPE_API_KEY=your_key
+   ```
+
+2. From the **repository root**:
+
+   ```bash
+   docker compose up -d --build
+   ```
+
+3. In the EC2 security group, allow inbound **TCP 8080** (or terminate TLS on a load balancer and forward to 8080).
+
+4. Open `http://<instance-public-ip>:8080` in a browser.
+
+Behavior:
+
+- **Nginx** listens on **8080**, serves the built React app, and proxies `/api/` to the FastAPI service.
+- **SQLite** lives in a named volume (`backend_data`) at `/app/data/report_agent_system_lantian.db` inside the backend container.
+- Swagger UI remains available at `http://<host>:8080/docs`.
+
+To use a different public port, change the left side of the port mapping in `docker-compose.yml` (for example `"80:8080"`).
 
 ## Features
 
@@ -46,16 +75,17 @@ Runs at `http://localhost:5173`.
 
 ## Tech Stack
 
-| Layer   | Stack                          |
-|---------|---------------------------------|
-| Backend | FastAPI, SQLAlchemy, SQLite     |
-| Frontend| React 18, Tailwind CSS, Axios   |
-| AI      | DashScope (Qwen) via OpenAI API |
+| Layer    | Stack                          |
+|----------|--------------------------------|
+| Backend  | FastAPI, SQLAlchemy, SQLite    |
+| Frontend | React 19, Tailwind CSS, Axios  |
+| AI       | DashScope (Qwen) via OpenAI API |
+| Edge     | Nginx (static + `/api` proxy)  |
 
 ## Documentation
 
-- [Backend README](smart-repo-agent-backend/README.md) — API details, agent tools, setup
-- [Frontend README](smart-repo-agent-frontend/README.md) — Frontend setup and features
+- [Backend README](smart-repo-agent-backend/README.md) — API details, agent tools, Docker notes
+- [Frontend README](smart-repo-agent-frontend/README.md) — env vars, Docker notes
 
 ## License
 
